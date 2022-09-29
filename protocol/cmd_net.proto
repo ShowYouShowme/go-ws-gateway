@@ -1,0 +1,61 @@
+syntax = "proto3";
+package protocol;
+option go_package="./;protocol";
+
+enum MainCmdID //枚举消息类型
+{
+    SYS = 0;                //系统类
+    GAME = 1;               //游戏类
+    LOBBY = 2;              //大厅类	
+    ACCOUNTS = 3;           //登陆类		
+}
+
+
+enum SubCmdID
+{
+    // 系统协议
+    SYS_SOFTINFO                    = 0;                          //系统软件相关信息，客户端连接后第一条协议主动告知服务器（不需要等待结果)
+    SYS_HEART_ASK                   = 1;                         //心跳请求
+    SYS_HEART_ACK                   =2;                          //心跳应答
+    SYS_BOMB_MSG                    =3;                         //系统强弹消息--服务器主动推送
+    SYS_USER_STATUS                 =4;                        //用户在房间状态
+    SYS_COMM_MSG                    =6;                      //系统通用消息--服务器主动推送	
+    SYS_UPDATE_USER_GOLD            =7;  	                //更新用户金币
+    SYS_TEST_SPEED_REQ              =9;                  //测速协议 用户在房间内上传 
+    SYS_TEST_SPEED_RESP             =10;                 // 测速协议 收到CMD_SYS_TEST_SPEED_REQ且用户在房间内返回
+
+    // 登录协议
+    ACCOUNTS_TOKEN_LOGON_REQ                =11;            	   //token登录（上行）cmd_lobby.xml -> CTokenLogonReq" />   
+    ACCOUNTS_LOGON_FAIL_RESP                =12;                //登录请求失败（下行）cmd_lobby.xml->CLogonFailResp" />
+    ACCOUNTS_LOGON_SUCCESS_RESP             =13;                //登录请求成功（下行）cmd_lobby.xml->CLogonSuccessResp" />
+    ACCOUNTS_FIRST_LOGON_GIFT_RESP          =14;                //下行新手奖励 （下行）cmd_lobby.xml->CFirstLogonGiftResp"/>	
+    ACCOUNTS_QUICKLY_LOGON_REQ              =15;    	        //游客登录（上行）" />  		
+    ACCOUNTS_THIRD_LOGON_REQ                =16;  	           //第三方登录（上行）cmd_lobby.xml -> CThirdLogonReq"   />			
+    ACCOUNTS_MODIFY_USERINFO_REQ     	    =17;	               //修改用户信息（上行）cmd_lobby.xml ->CModifyUserInfoReq"   />	
+    ACCOUNTS_MODIFY_USERINFO_RESP           =18;               //修改用户信息（下行）cmd_lobby.xml ->CModifyUserInfoResp"   />	
+}
+
+message TPackage
+{
+    MainCmdID MainCmd  = 1;
+    SubCmdID  SubCmd   = 2;
+    bytes    Data     = 3;
+}
+
+message CTokenLogonReq {
+    string Token = 1;
+    int32  GameID = 2;
+}
+
+message CLogonFailResp{
+    int32 ErrorCode = 1;
+    string Msg = 2;
+}
+
+message CLogonSuccessResp{
+    int32   UserID      = 1;
+    string  Token       = 2;
+    string  NickName    = 3;
+    int32   Gold        = 4;
+    string  Avatar      = 5; //游客 "guest_male" "guest_female" 随机给一个
+}
